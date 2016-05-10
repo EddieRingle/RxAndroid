@@ -1,10 +1,29 @@
 # RxAndroid Releases #
 
+### Version 1.2.0 - May 4th 2016 ###
+
+ * Rewrite the Android-specific schedulers (main thread or custom) to greatly reduce allocation and
+   performance overhead of scheduling work.
+ * `HandlerScheduler.create` has been deprecated in favor of `AndroidSchedulers.from(Looper)` as
+   a `Looper` is the actual mechanism of scheduling on Android, not `Handler`.
+ * Fix: Correct the behavior of `AndroidSchedulers.mainThread()` to only invoke the registered
+   `RxAndroidSchedulersHook` for creating the main thread scheduler and to cache the result instead
+   of invoking it every time. This behvior change eliminates a performance overhead and brings
+   behavior in line with RxJava. If you were relying on the ability to change the main thread
+   scheduler over time (such as for tests), return a delegating scheduler from the hook which allows
+   changing the delegate instance at will.
+ * RxJava dependency now points at v1.1.4.
+ * `RxAndroidPlugins.reset()` is now marked as `@Experimental` to match the RxJava method of the
+   same name and behavior.
+
+
 ### Version 1.1.0 - December 9th 2015 ###
 
  * New: `MainThreadSubscription` utility class runs its `onUnsubscribe` action on the Android main
    thread. This aids in adding tear-down actions which must be executed on the main thread without
    having to deal with posting to the main thread yourself.
+ * Fix: Lazily initialize `mainThread()` scheduler so that no Android code is run when overridden.
+   This allows unit tests overriding the implementation to work correctly.
  * RxJava dependency now points at v1.1.0.
 
 
